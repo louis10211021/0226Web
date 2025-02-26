@@ -6,7 +6,33 @@
     </head>
 
     <body>
-        <!-- 新增容器包裹標題圖片與點擊數 -->
+        <!-- 容器box高度100vh，水平垂直居中，背景色为#f0f0f0，内部元素居中显示。 -->
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f0f0f0;
+            }
+
+            .container {
+                text-align: center;
+            }
+
+            .title {
+                width: 200px;
+                height: 200px;
+            }
+
+            .cat-img {
+                font-size: 50px;
+                font-weight: bold;
+                color: #ff0000;
+            }
+        </style>
         <div class="container">
             <img class="title" src
             ="imgs/popcat.svg" alt="POPCAT">
