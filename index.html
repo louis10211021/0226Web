@@ -1,42 +1,162 @@
 <!DOCTYPE html>
-
-<html lang="en">
+<html lang="zh-TW">
     <head>
+        <meta charset="UTF-8">
         <title>POPCAT CLASSIC</title>
-    </head>
+        <meta charset="UTF-8">
 
-    <body>
-        <!-- 容器box高度100vh，水平垂直居中，背景色为#f0f0f0，内部元素居中显示。 -->
+        <!-- Google font -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@900&display=swap&text=0123456789" rel="stylesheet">
+
         <style>
+            html { height:100%; overflow:hidden; }
             body {
-                margin: 0;
-                padding: 0;
+                height:100%;
+                margin:0;
                 display: flex;
-                justify-content: center;
+                flex-direction: column;
+                justify-content: space-between;
                 align-items: center;
-                height: 100vh;
-                background-color: #f0f0f0;
+                background-color: #bdaa90;
+                user-select: none;
+                -moz-user-select: none;
+                -webkit-user-select: none;
+                position:relative;
+                overflow:hidden;
             }
-
-            .container {
-                text-align: center;
+            body::before{
+                content:"";
+                position:absolute;
+                width:120%;height:120%;
+                top:50%;left:50%;
+                z-index:-1;
+                transform:translate(-50%,-50%) rotate(-3deg);
+                background-image: url("imgs/bg.jpg");
+                background-repeat: repeat-x;
+                background-size: contain;
             }
 
             .title {
-                width: 200px;
-                height: 200px;
+                margin:2em 0 0 0;
+                width: min(600px,80%);
             }
 
             .cat-img {
-                font-size: 50px;
-                font-weight: bold;
-                color: #ff0000;
+                height:0;
+                flex-grow:1;
+                width:100%;
+                max-width: 800px;
+                background-position: bottom;
+                background-size: contain;
+                background-repeat: no-repeat;
+                touch-action: manipulation;
+                text-align: center;
+                color:white;
+                -webkit-text-stroke-width: 3px;
+                -webkit-text-stroke-color: black;
+                font-weight:900;
+                font-size:80px;
+                font-family: 'Nunito', sans-serif;
+                word-wrap: break-word;
             }
+            @media(min-width:1000px) {
+                .title {
+                    width: min(400px,80%);
+                }
+                .cat-img {
+                    font-size: 40px;
+                    -webkit-text-stroke-width: 1.5px;
+                }
+            }
+            #p { background-image: url("imgs/p.png"); }
+            #op { background-image: url("imgs/op.png"); }
         </style>
-        <div class="container">
-            <img class="title" src
-            ="imgs/popcat.svg" alt="POPCAT">
-            <div class="cat-img" id="p">0</div>
+    </head>
+    <body>
+        <img
+            class="title"
+            src="imgs/popcat.svg"
+            alt="POPCAT"
+        />
+        <div
+            class="cat-img"
+            id="p"
+        >
+            999999
         </div>
+
+        <script>
+            // Preload the alternate cat image
+            const preloadImage = new Image();
+            preloadImage.src = "imgs/op.png";
+
+            // Get the cat element
+            const catElement = document.getElementById("p");
+
+            // Array of pop sounds
+            const popSounds = [
+                "pops/pop1.mp3",
+                "pops/pop2.mp3",
+                "pops/pop3.mp3",
+                "pops/pop4.mp3",
+            ];
+            let currentPopIndex = 0;
+
+            // Cookie utility functions
+            function getCookieValue(cookieName) {
+                const name = cookieName + "=";
+                const decodedCookie = decodeURIComponent(document.cookie);
+                const cookieArray = decodedCookie.split(';');
+                for (let i = 0; i < cookieArray.length; i++) {
+                    let cookie = cookieArray[i];
+                    while (cookie.charAt(0) === ' ') {
+                        cookie = cookie.substring(1);
+                    }
+                    if (cookie.indexOf(name) === 0) {
+                        return cookie.substring(name.length, cookie.length);
+                    }
+                }
+                return "";
+            }
+
+            function setCookieValue(cookieName, cookieValue, expirationDays) {
+                const date = new Date();
+                date.setTime(date.getTime() + (expirationDays * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + date.toUTCString();
+                document.cookie = cookieName + "=" + cookieValue + ";" + expires + ";path=/";
+            }
+
+            let popCount = getCookieValue("pop_count");
+            catElement.innerHTML = popCount > 0 ? popCount : "";
+
+            const handleCatOpen = function() {
+                // Change cat image to open mouth
+                catElement.id = "op";
+
+                // Play pop sound
+                const popSound = new Audio(popSounds[currentPopIndex]);
+                popSound.load();
+                popSound.play();
+
+                // Update index for next pop sound
+                currentPopIndex = (currentPopIndex + 1) % popSounds.length;
+
+                // Increment pop count
+                popCount++;
+                catElement.innerHTML = popCount;
+                setCookieValue("pop_count", popCount, 365);
+
+                // Fire Google Analytics event for pop
+                // gtag('event', 'pop');
+            };
+
+            const handleCatClose = () => setTimeout(() => catElement.id = "p", 25);
+
+            document.addEventListener("pointerup", handleCatClose);
+            document.addEventListener("keyup", handleCatClose);
+            document.addEventListener("pointerdown", handleCatOpen);
+            document.addEventListener("keydown", handleCatOpen);
+        </script>
     </body>
 </html>
